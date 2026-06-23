@@ -1,0 +1,6 @@
+@BancadDigitalAPI_HostAddress = http://localhost:5007
+
+GET {{BancadDigitalAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

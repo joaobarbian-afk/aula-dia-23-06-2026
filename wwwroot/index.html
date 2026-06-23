@@ -1,0 +1,71 @@
+    <html lang="pt-PT">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Gémeo Digital - API REST</title>
+        <style>
+            /* Estilização básica da página e construção do tanque via CSS */
+            body {
+                font-family: sans-serif;
+                text-align: center;
+                background: #1e293b;
+                color: white;
+                padding: 40px;
+            }
+
+            .tanque {
+                width: 120px;
+                height: 300px;
+                border: 4px solid #94a3b8;
+                margin: 20px auto;
+                background: #334155;
+                position: relative;
+            }
+
+            /* A classe "agua" preenche de baixo para cima (bottom: 0) com uma animação suave (transition) */
+            .agua {
+                width: 100%;
+                position: absolute;
+                bottom: 0;
+                background: #0ea5e9;
+                transition: height 0.3s ease;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Nível Atual: <span id="lblNivel">0</span>%</h1>
+        <!-- Recipiente visual do tanque -->
+        <div class="tanque">
+            <div class="agua" id="divAgua" style="height: 0%;"></div>
+        </div>
+        <h3 id="lblValvula">A Carregar...</h3>
+        <script>
+            // Função assíncrona para consultar o Backend
+            async function buscarDados() {
+                try {
+
+                    // 1. Chama o nosso endpoint da API C#
+                    const res = await fetch('/api/bancada/atual');
+
+                    // 2. Extrai o JSON da resposta
+                    const estado = await res.json();
+
+                    // 3. Atualiza o texto do nível (Formatado para 1 casa decimal)
+                    document.getElementById('lblNivel').innerText = estado.nivel.toFixed(1);
+                    // 4. Atualiza graficamente o nível de água injetando CSS inline
+                    document.getElementById('divAgua').style.height = estado.nivel + '%';
+
+                    // 5. Atualiza o estado da válvula
+
+                    document.getElementById('lblValvula').innerText = estado.valvulaAberta ? 'VálvulaAberta(ON)' : 'Válvula Fechada(OFF)';
+                } catch (err) {
+                    console.error("Erro ao buscar dados na API", err);
+                }
+            }
+    // Estratégia de "Polling": Executa a função buscarDados() a cada 1000 milissegundos (1segundo) eternamente
+            setInterval(buscarDados, 1000);
+        </script>
+    </body>
+
+    </html>
